@@ -1,0 +1,7 @@
+__pycache__/
+*.pdf
+*.png
+*.jpg
+uploaded_file.pdf
+.DS_Store
+*.jpeg

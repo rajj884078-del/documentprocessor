@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Insurance Document Processor</title>
+    <style>
+        body { font-family: Arial; max-width: 600px; margin: 50px auto; padding: 20px; }
+        h1 { color: #2c3e50; }
+        input, button { padding: 10px; margin: 10px 0; font-size: 16px; }
+        button { background: #3498db; color: white; border: none; cursor: pointer; border-radius: 5px; }
+        #result { margin-top: 20px; padding: 15px; background: #f4f4f4; border-radius: 5px; white-space: pre-wrap; }
+        .spinner {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <h1>Insurance Document Processor</h1>
+    <p>Upload an insurance document (PDF or image) to extract key information.</p>
+
+    <input type="file" id="fileInput">
+    <br>
+    <button onclick="processDocument()">Process Document</button>
+
+    <div id="result"></div>
+
+        <script>
+        async function processDocument() {
+            const fileInput = document.getElementById('fileInput');
+            const resultDiv = document.getElementById('result');
+
+            if (!fileInput.files[0]) {
+                resultDiv.textContent = "Please select a file first.";
+                return;
+            }
+
+                resultDiv.innerHTML = '<div class="spinner"></div>';
+
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            try {
+                const response = await fetch('/process', {
+                    method: 'POST',
+                    body: formData
+                });
+                                const data = await response.json();
+                const r = data.result;
+
+                resultDiv.innerHTML = `
+                    <b>Policy Number:</b> ${r.policy_number.value || "Not found"}<br>
+                    <small style="color:gray">Source: ${r.policy_number.source || "-"}</small><br><br>
+
+                    <b>Claim Number:</b> ${r.claim_number.value || "Not found"}<br>
+                    <small style="color:gray">Source: ${r.claim_number.source || "-"}</small><br><br>
+
+                    <b>Claimant Name:</b> ${r.claimant_name.value || "Not found"}<br>
+                    <small style="color:gray">Source: ${r.claimant_name.source || "-"}</small><br><br>
+
+                    <b>Claim Amount:</b> ${r.claim_amount.value || "Not found"}<br>
+                    <small style="color:gray">Source: ${r.claim_amount.source || "-"}</small><br><br>
+
+                    <b>Incident Date:</b> ${r.incident_date.value || "Not found"}<br>
+                    <small style="color:gray">Source: ${r.incident_date.source || "-"}</small><br><br>
+
+                    <b>Confidence:</b> ${r.confidence}<br>
+                    <b>Status:</b> ${data.review_status}
+                `;
+            } catch (error) {
+                resultDiv.textContent = "Error: " + error;
+            }
+        }
+    </script>
+</body>
+</html>
