@@ -4,7 +4,6 @@ from pdf2image import convert_from_path
 from google import genai
 import json
 from fastapi.responses import FileResponse
-pytesseract.pytesseract.tesseract_cmd = "/usr/bin/tesseract"
 
 
 app = FastAPI()
